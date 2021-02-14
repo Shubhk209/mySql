@@ -1,0 +1,193 @@
+/*
+	RETREIVE METHOD 
+	1. SELECTION- with WHERE CLAUSE CONDITION only from one table
+	2. PROJECTION- Without WHERE Clause CONDITION only from one table
+	3. JOINS
+		-ANSI FORMAT JOIN
+			- With ON keyword join CONDITION
+			- NEW STYLE FORMAT
+			- INNER, OUTER, CROSS, NATURAL(Not supported in SQL SERVER)
+		-NON ANSI FORMAT JOINS
+			- With WHERE Clause Join CONDITION
+			- OLD STYLE FORMAT
+			- EQUI-Join, NON-EQUI Join, Self Join
+
+
+	EQUI JOIN
+	- Fetch/retreive data from multiple tables on an equality condition (=).
+	- Cannot use the following operator in Where Clause: (<, >, <=, >=, !=, !<, !> ).
+
+	NON-EQUI JOIN
+	- Fetch/retreive data from multiple tables based on any condition except equal condtion.
+	- Cannot use the following operator in Where Clause: (=). 
+
+	
+	
+	
+	JOINS IN SQL SERVER
+	- It is use to retreive/fetch data from 2 or more related tables.
+	- Table related to each other using foreign key constraints.
+	
+	TYPES OF JOINS 
+	1. INNER
+	2. OUTER- Left OUTER Join, right OUTER Join, Full OUTER Join
+	3. CROSS
+	4. SELF 
+
+	
+
+
+	1.INNER JOIN
+	- Matching Rows Data only. 
+	- Eliminate NON-Matching Data.
+	- Need Common Column(PK,FK) to join in two table.
+		-Datatype must be same of common column(FK,PK).
+
+	- Left table key  ------Matches to -----> Right table key list.(ON cause condtion)
+		- Based on matched left to right table show the result.
+			- Ex: Row 1{Depart_id}---- matches to---> all ids in Depatment table. 
+
+	2.1 LEFT Outer Join
+	- Returns Matching rows + Non Matching of Left Table data.
+	
+
+	2.2 Right Outer Join
+	- Returns Matching rows + Non Matching of Right Table data.
+
+	2.3 Full Outer Join
+	- Returns Matching rows + Non-Matching of Left Table data + Non-Matching of Right Table data.
+
+	
+	3. Cross Join
+	- Produces the cartesian product of the 2 tables involves in the join.
+	- EXAMPLE: 
+			tblEMployee - 10 rows
+			tblDepartment - 4 rows 
+			cross join between these 2 table produced 40 rows.(m X n)
+	
+	- Cross Join shouldn't have ON Clause
+
+
+
+
+	General Way tO Remember Join
+	
+	SELECT		ColumnList
+	FROM		LeftTable
+	JOINTYPE	RightTable
+	ON			JoinConition
+*/
+go
+
+
+--CREATE DATABASE Sample;
+
+Use Sample
+go
+
+
+-- Create and insert data into tblEmployee2 and tblDepartment
+
+CREATE TABLE tblDepartment	(ID INT IDENTITY PRIMARY KEY,
+							 [DEPARTMENT NAME] NVARCHAR(50),
+							 LOCATION NVARCHAR(50),
+							 [DEPARTMENT HEAD] NVARCHAR(50)
+							);
+
+INSERT INTO tblDepartment	([DEPARTMENT NAME],LOCATION,[DEPARTMENT HEAD])
+VALUES	('IT', 'London','Rick'),
+		('Payroll', 'Delhi','Ron'),
+		('HR', 'New York','Christie'),
+		('Other Department', 'Sydney','Dally');
+
+select * from tblDepartment;
+
+CREATE TABLE tblEmployee2	(ID INT IDENTITY,
+							 NAME NVARCHAR(30),
+							 GENDER NVARCHAR(10),
+							 SALARY INT ,
+							 DEPARTMENT_ID INT FOREIGN KEY REFERENCES tblDepartment(ID) ,
+							 CONSTRAINT PK_tblEmployee PRIMARY KEY (ID)
+							);
+
+INSERT INTO tblEmployee2(NAME,GENDER,SALARY,DEPARTMENT_ID)
+VALUES	('Tom', 'Male', 40000, 1),
+		('Pam', 'Female', 30000, 3),
+		('John', 'Male', 35000, 1),
+		('Sam', 'Male', 45000, 2),
+		('Tod', 'Male', 28000, 2),
+		('Ben', 'Male', 70000, 1),
+		('Sara', 'Male', 48000, 3),
+		('Valarie', 'Male', 55000, 1),
+		('James', 'Male', 65000, NULL),
+		('Rushell', 'Male', 88000, Null);
+
+Select * from tblEmployee2;
+go
+
+
+
+
+-- INNER JOIN
+select tblEmployee2.ID,NAME,GENDER,SALARY, tblDepartment.[DEPARTMENT NAME], tblDepartment.[DEPARTMENT HEAD]
+from tblEmployee2  JOIN tblDepartment 
+on tblEmployee2.DEPARTMENT_ID = tblDepartment.ID;
+
+--Join using alias name
+select e.ID,NAME,GENDER,SALARY, d.[DEPARTMENT NAME], d.[DEPARTMENT HEAD]
+from tblEmployee2 as e INNER JOIN tblDepartment as d
+on e.DEPARTMENT_ID = d.ID;
+
+go
+
+
+
+
+-- Left Outer Join
+
+select tblEmployee2.ID,NAME,GENDER,SALARY, tblDepartment.[DEPARTMENT NAME], tblDepartment.[DEPARTMENT HEAD]
+from tblEmployee2  LEFT JOIN tblDepartment 
+on tblEmployee2.DEPARTMENT_ID = tblDepartment.ID;
+
+--Join using alias name
+select e.ID,NAME,GENDER,SALARY, d.[DEPARTMENT NAME], d.[DEPARTMENT HEAD]
+from tblEmployee2 as e LEFT OUTER JOIN tblDepartment as d
+on e.DEPARTMENT_ID = d.ID;
+
+GO
+
+-- Right Outer Join
+
+select tblEmployee2.ID,NAME,GENDER,SALARY, tblDepartment.[DEPARTMENT NAME], tblDepartment.[DEPARTMENT HEAD]
+from tblEmployee2  Right JOIN tblDepartment 
+on tblEmployee2.DEPARTMENT_ID = tblDepartment.ID;
+
+--Join using alias name
+select e.ID,NAME,GENDER,SALARY, d.[DEPARTMENT NAME], d.[DEPARTMENT HEAD]
+from tblEmployee2 as e Right OUTER JOIN tblDepartment as d
+on e.DEPARTMENT_ID = d.ID;
+
+go
+
+-- Full Outer Join
+
+select tblEmployee2.ID,NAME,GENDER,SALARY, tblDepartment.[DEPARTMENT NAME], tblDepartment.[DEPARTMENT HEAD]
+from tblEmployee2 FULL Outer JOIN tblDepartment 
+on tblEmployee2.DEPARTMENT_ID = tblDepartment.ID;
+
+--Join using alias name
+select e.ID,NAME,GENDER,SALARY, d.[DEPARTMENT NAME], d.[DEPARTMENT HEAD]
+from tblEmployee2 as e FULL JOIN tblDepartment as d
+on e.DEPARTMENT_ID = d.ID;
+
+GO
+
+
+--CROSS JOIN
+select tblEmployee2.ID,NAME,GENDER,SALARY, tblDepartment.[DEPARTMENT NAME], tblDepartment.[DEPARTMENT HEAD]
+from tblEmployee2 CROSS JOIN tblDepartment ;
+
+
+--Join using alias name
+select e.ID,NAME,GENDER,SALARY, d.[DEPARTMENT NAME], d.[DEPARTMENT HEAD]
+from tblEmployee2 as e Cross JOIN tblDepartment as d;

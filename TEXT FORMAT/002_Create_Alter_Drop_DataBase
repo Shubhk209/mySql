@@ -1,0 +1,64 @@
+/*
+
+	A sql server database can be created and altered and dropped
+		- Graphically using SSMS
+		- Using Query 
+
+
+	When We Create a Database, Two files get Generated
+		1. mdf - Data File (contain actual data).
+			-
+			- Path: C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\DATA
+		
+		2. .ldf - Transaction Log File(Used to Recover the Database)
+			- Path: C:\Program Files\Microsoft SQL Server\MSSQL12.SQLEXPRESS\MSSQL\DATA
+
+
+
+	DROPPING A DATABASE, DELETES THE LDF AND MDF FILES.
+
+	We cannot drop a database, if it is currently in use.
+	- We get ERROR- Cannot drop database 'NameOfDatabase' because it is currently in use.
+
+    We cannot drop System Databases.
+			
+			 
+
+*/
+go
+
+-- To Create Database 
+	-- Graphically: Object Explorer>Databases>New DataBase(Right CLick)
+
+	-- Using Query
+	CREATE DATABASE SAMPLE2;
+	go
+
+
+--Rename Database
+	--Grpahically - object Exploer>Databases>(Select DataBase)> Rename(Right Click)
+
+	--Using Query
+	ALTER DATABASE SAMPLE2 MODIFY NAME = [SAMPLE3];
+	GO
+
+	--OR
+		--Using stored procedure
+	sp_renameDB 'SAMPLE3','SAMPLE4';
+	go
+
+
+
+--DROP THE DATABASE
+	--Grpahically - object Exploer>Databases>(Select DataBase)> Delete(Right Click)> check close connections
+
+	-- using Query
+	DROP DATABASE SAMPLE4;
+
+		-- If other user are connected, we need to put the DB in SINGLE USER MODE and then drop the DB
+		-- With Rollback Immdediate, will rollback all incomplete transaction(running queries) and closes the connection to the DB
+		
+			ALTER DATABASE SAMPLE4 SET SINGLE_USER ROLLBACK IMMEDIATE;
+			go
+
+		

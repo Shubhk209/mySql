@@ -1,0 +1,310 @@
+/*
+	GROUP BY
+	- it is used to group
+		- a selected sets of rows into a set of summary rows
+			- by the values of one or more columns or expressions.
+	
+	- GROUP THE SIMILAR VALUE AND FIND THE AGGREGATE VALUE
+
+	- It is always in conjunction (AND) with one or more aggregate functions.
+	
+	!NOTE:
+		- If we omit, the GROUP BY clause and try to execute the query:
+	ERROR:
+	Column 'tblEmployee.CITY' is invalid in the select list because it is not contained in either an aggregate function or the GROUP BY clause.
+
+	
+	FILTERING GROUP
+	-WHERE is used to fiter rows before aggregation,
+		- where as HAVING clause use to filter groups after aggregation.
+
+
+	AGGREGATE FUNCTION:
+	-It performs a calculation on a set of values, and returns a single value.
+		-Except COUNT(*)
+	-It ignore null values
+
+	USE AGGREGATE FUNCTION AS EXPRESSION ONLY IN THE FOLLOWING SITUATIONS: 
+
+    1. The select list of a SELECT statement (either a subquery or an outer query).
+    2. A HAVING clause.
+
+	TRANSACT-SQL PROVIDES THE FOLLOWING AGGREGATE FUNCTIONS:
+	
+    1. APPROX_COUNT_DISTINCT
+	-This function returns the approximate number of unique non-null values in a group.
+	-Return Type - bigint
+    
+	2. AVG
+	- This function returns the average of the values in a group. 
+	- It ignores null values.
+	- Return Type- (int ---> int),(Bigint---> bigint)
+	-Syntax 
+		AVG ( [ ALL | DISTINCT ] expression )  
+		[ OVER ( [ partition_by_clause ] order_by_clause ) ]
+
+    3. CHECKSUM_AGG
+	- This function returns the checksum of the values in a group. 
+	- CHECKSUM_AGG ignores null values. 
+	- The OVER clause can follow CHECKSUM_AGG.
+	- Return type- int
+	- Syntax
+		CHECKSUM_AGG ( [ ALL | DISTINCT ] expression )
+    
+	4. COUNT
+	- The COUNT() function returns the number of rows that matches a specified criterion. 
+	- COUNT operates like the COUNT_BIG function. 
+	- These functions differ only in the data types of their return values. 
+	- COUNT always returns an int data type value. 
+	- COUNT_BIG always returns a bigint data type value
+	- Syntax
+		COUNT ( { [ [ ALL | DISTINCT ] expression ] | * } )  
+
+    5. COUNT_BIG
+	- The COUNT() function returns the number of rows that matches a specified criterion.
+	  
+    6. GROUPING
+	- Indicates whether a specified column expression in a GROUP BY list is aggregated or not. 
+	- GROUPING returns 1 for aggregated or 0 for not aggregated in the result set. 
+	- GROUPING can be used only in the SELECT <select> list, HAVING, and ORDER BY clauses when GROUP BY is specified.
+	- Return Type - tinyint (0 or 1)
+	- Syntax
+		GROUPING ( <column_expression> )
+		  
+    7. GROUPING_ID
+	- Is a function that computes the level of grouping. 
+	- GROUPING_ID can be used only in the SELECT <select> list, HAVING, or ORDER BY clauses when GROUP BY is specified.
+	- Return Type- int
+	- Syntax
+		GROUPING_ID ( <column_expression>[ ,...n ] ) 
+
+    8. MAX
+	- Returns the maximum value in the expression.
+	- Return type- Returns a value same as expression.
+	- Syntax
+		MAX( [ ALL | DISTINCT ] expression )
+
+    9. MIN
+	- Returns the minimum value in the expression. 
+		-May be followed by the OVER clause.
+	- Return type- Returns a value same as expression.
+	- Syntax
+		MIN( [ ALL | DISTINCT ] expression )
+		 
+    10.STDEV
+	- Returns the statistical standard deviation of all values in the specified expression.
+	- Return type- float
+	- Syntax
+		STDEV ( [ ALL | DISTINCT ] expression ) 
+    
+	11.STDEVP
+	- Returns the statistical standard deviation for the population for all values in the specified expression.
+	- Return type- float
+	- Syntax
+		STDEV ( [ ALL | DISTINCT ] expression )
+
+    12.STRING_AGG
+	- 
+    13.SUM
+	- Returns the sum of all the values, or only the DISTINCT values, in the expression. 
+	- SUM can be used with numeric columns only. 
+	- Null values are ignored.
+	- Return type- - (int -->int), (bigint-->bigint)
+	- Syntax
+		SUM ( [ ALL | DISTINCT ] expression ) 
+    
+	14.VAR
+	- Returns the statistical variance of all values in the specified expression.
+	- Return type- float
+	- Syntax
+		VAR ( [ ALL | DISTINCT ] expression ) 
+
+    15.VARP
+	- Returns the statistical variance for the population for all values in the specified expression.
+	- Return type- float
+	- Syntax
+		VAR ( [ ALL | DISTINCT ] expression ) 
+
+
+	ARGUMENTS
+
+	ALL
+	- Applies the function to all values. ALL is the default.
+
+	DISTINCT
+	- Specifies that each unique value is considered.
+
+	expression
+	- Is an expression of the exact numeric or approximate numeric data type category, except for the bit data type. 
+	- Aggregate functions and subqueries are not permitted.
+
+	OVER ( [ partition_by_clause ] order_by_clause)
+	- partition_by_clause divides the result set produced by the FROM clause into partitions to which the function is applied. 
+	- If not specified, the function treats all rows of the query result set as a single group. 
+	- order_by_clause determines the logical order in which the operation is performed. order_by_clause is required. 
+
+
+
+
+	NOTES:
+	Conjunction:
+	- the logical conjunction is used to check that two conditions are true, 
+			in logical conjunction both conditions must be verified. 
+				In logical conjunction, if either condition is false, the whole statement is false.
+	
+	-Ex-  we use the AND operator to combine two conditions
+
+	Disjunction:
+	-A logical disjunction can be performed in one field. 
+		-Interpreter to find out if the field matches this or that value.
+
+	-In logical disjunction, if one condition is true than the query will be executed, 
+		-if the first condition is false ,
+			-then the OR keyword check next condition is true or not if the condition is true query will be executed
+
+	Ex-We use the OR operator to combine two conditions
+*/
+
+Use Sample
+go
+
+
+Create Table tblEmployee	(ID int identity(1,1) NOT NULL,
+							 NAME nvarchar(30),
+							 GENDER nvarchar(10) default 'Other',
+							 SALARY int,
+							 CITY nvarchar(50),
+							 check (SALARY >= 15000),
+							 
+							 );
+
+SELECT * FROM tblEmployee;
+
+INSERT INTO tblEmployee(NAME,GENDER,SALARY,CITY)
+VALUES	('Tom', 'Male', 40000, 'London'),
+		('Pam', 'Female', 30000, 'New York'),
+		('John', 'Male', 35000, 'London'),
+		('Sam', 'Male', 45000, 'London'),
+		('Tod', 'Male', 28000, 'Sydney'),
+		('Ben', 'Male', 70000, 'New York'),
+		('Sara', 'Male', 48000, 'Sydney'),
+		('Valarie', 'Male', 55000, 'New York'),
+		('James', 'Male', 65000, 'London'),
+		('Rushell', 'Male', 88000, 'London');
+
+Select * from tblEmployee;
+UPDATE tblEmployee SET NAME= 'Rushell' where salary = 88000 and CITY='London';
+go
+
+
+--aggregate function performs a calculation on a set of values, and returns a single value.
+-- Sum , select sum of salary
+SELECT SUM(SALARY) FROM tblEmployee;
+GO
+
+--MAX()
+SELECT MAX(SALARY) FROM tblEmployee;
+go
+
+--MIN()
+SELECT MIN(SALARY) FROM tblEmployee;
+
+--Count(*)
+SELECT Count(*) FROM tblEmployee;
+SELECT Count(SALARY) FROM tblEmployee;
+go
+
+
+
+--Group By
+SELECT CITY, NAME
+FROM tblEmployee
+GROUP BY CITY, NAME;
+
+
+go
+
+
+
+--Total salary paid by Organization
+SELECT SUM(SALARY) FROM tblEmployee;
+
+
+--Total salary in organization paid  by City
+SELECT CITY , SUM(SALARY) AS SALARY
+FROM tblEmployee
+GROUP BY CITY;
+
+--grouping by multiple column
+SELECT CITY ,Gender ,SUM(SALARY) AS SALARY
+FROM tblEmployee
+GROUP BY CITY,GENDER
+ 
+
+--group then sort the list
+SELECT CITY ,Gender ,SUM(SALARY) AS SALARY, COUNT(ID) as [Total Employees]
+FROM tblEmployee
+GROUP BY CITY,GENDER
+order by SALARY desc, City 
+
+go
+
+-- ERROR
+SELECT CITY , SUM(SALARY) AS SALARY
+FROM tblEmployee
+
+--Condition 1- select list must be have in agrregrate function
+SELECT Count(CITY) , SUM(SALARY) AS SALARY
+FROM tblEmployee;
+
+-- Condtion 2- select list must be contained in group by clause
+SELECT CITY , SUM(SALARY) AS SALARY
+FROM tblEmployee 
+group by CITY
+go
+
+
+
+--Filter the Group(Having Clause)
+-- using where clause
+SELECT CITY ,Gender ,SUM(SALARY) AS SALARY
+FROM tblEmployee
+where Gender= 'Male'
+GROUP BY CITY,GENDER
+
+-- having clause
+SELECT CITY ,Gender ,SUM(SALARY) AS SALARY
+FROM tblEmployee
+GROUP BY CITY,GENDER
+Having Gender= 'Male'
+
+--ERROR
+SELECT CITY ,Gender ,SUM(SALARY) AS SALARY
+FROM tblEmployee
+where Sum(Salary) > 30000
+GROUP BY CITY,GENDER
+
+
+
+/*
+	Difference between WHERE AND HAVING
+	
+	1. Where clause can be used with - SELECT, INSERT, And Update statement
+		- Having clause can only be used with the select statement.
+		
+	2.Where fiters rows before aggregation function
+		- Having filters rows after the aggregation can be performed.
+		 
+	3. Aggregation function cannot be used in WHERE clause unless it is in a subquery contained in a Having clause.
+		- Aggregation function can be used in Having clause.
+
+
+		EXAMPLE:
+		select EmployeeId, sum(amount)
+		from Sales
+		group by Employee
+		where EmployeeId in	(
+								select max(EmployeeId) 
+								from Employees
+							)
+*/

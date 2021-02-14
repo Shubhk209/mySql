@@ -1,0 +1,72 @@
+/*
+
+	Default Constraint
+	- it is used to insert a default value into a column.
+	- the default value will be added to all new records,
+		- if no value is specified, inluding NULL.  
+	
+	
+	1. Add a default constraint while creating table
+		CREATE TABLE <tABLE NAME>
+		(
+			Id int ,
+			name varchar(10);
+			sal int,
+			loc varchar(10) default 'hyd'
+		)
+
+
+	2. ALtering an existing column to add a default constraint
+	-CHANING THE DEFINATION OF THE TABLE
+	- Syntax
+		
+		ALTER COLUMN <Table Name>
+		ADD COLUMN <Constraint_Name>
+		DEFAULT <Default_Value> FOR <Existing_Column_name>
+
+	2. Adding a new Column, with default value to an existing table
+	-CHANGING THE DEFINATION OF TABLE
+	- Syntax
+		
+		ALTER TABLE <tABLE_NAME>
+		ADD <cOLUMN nAME><dATA tYPE> <nULL | NOT NULL>
+		CONSTRAINT <CONSTRAINT NAME> DEFAULT <DEFAULT_VALUE>
+
+	3. Droping a constraint
+	- Syntax
+
+		ALTER TABLE <Table Name>
+		Drop CONSTRAINT <Contraint_Name>
+
+*/
+Use Sample
+go
+
+
+Select * from dbo.tblPerson;
+Select * from tblGender;
+go
+
+insert into tblPerson (ID, Name, Email,GenderId) 
+values (9, 'sara','sara@sa.com', 2);
+GO
+
+insert into tblPerson (ID, Name, Email,GenderId) 
+values (9, 'sara','sara@sa.com', 2);
+GO
+
+--TO ADD DEFAULT CONSTRAINT
+ALTER TABLE tblPerson
+ADD CONSTRAINT DF_tblPerson_GenderId
+DEFAULT 3 FOR GenderId;
+go
+
+insert into tblPerson (ID, Name, Email)
+values (8, 'Mike', 'mi@mk.com');
+go
+
+
+--Drop the constraint
+ALTER TABlE tblPerson
+DROP CONSTRAINT DF_tblPerson_GenderID
+
