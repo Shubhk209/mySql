@@ -357,6 +357,9 @@ go
 
 --13. DATEADD(DATEPART, NumberToAdd, 'date')
 
+SELECT DATEADD(YEAR, 1 , '2020-10-12 00:00:45.730');		--2021-10-12 00:00:45.730
+SELECT DATEADD(MONTH, 1 , '2020-10-12 00:00:45.730');		--2020-11-12 00:00:45.730
+
 SELECT DATEADD(DAY, 20 , '2020-10-12 00:00:45.730');	--2020-11-01 00:00:45.730
 SELECT DATEADD(DAY, -20 , '2020-10-12 00:00:45.730');	--2020-09-22 00:00:45.730
 go
@@ -375,11 +378,139 @@ go
 --Calculate Age
 
 /*
+	1. Inputs
+		Current Date(CDT): 	01-31-2020	(MM-DD-YYYY)
+		Birthday(DOB):		11-30-2019	(MM-DD-YYYY)
 	
-*/
+	2. @Year= (CDT_Year(2020) - (DOB_Year(2019))) - 1, 
+						if DOB_Month(30)  > CDT_Month(31)								--(true)Year subtract by 1
+						OR
+						if ((DOB_Month equals to CDT_Month) AND (DOB_Day > CDT_Day)		--(true)Year subtract by 1
+
+						else (CDT_Year(2020) - (DOB_Year(2019))) - 0
+	
+	2.@temp = DateAdd @YEAR 
+	
+	3. @Months = (CDT_Months(31) - (DOB_Months(30)) - 1, 
+							if DOB_Days > CDT_Days		-- (true)CDT_Months subtract by 1
+
+							else (CDT_Months(31) - (DOB_Months(30)) - 0
+
+	4. @temp = DateAdd @months 
+	 
+	5  @days= CDT_day()- DOB_days(30)
+
+	6 . print @year @months @days
+	
+*/GO
+
+
+-- declare variables
+DECLARE @Input_DOB datetime, @tempDate datetime, @year int, @months int , @days int
+
+--assign of DOB date
+SET @Input_DOB = '10-20-1996'
+
+-- create a copy of Input_DOB value in Tempdate variable
+SELECT @tempdate = @Input_DOB
+
+--TESTING PURPOSE
+SELECT @tempDate AS [bEFORE YEAR SUBTRACT]
+
+SELECT @year = DATEDIFF(YEAR, @tempDate, GETDATE()) - 
+				CASE 
+					WHEN	( MONTH(@Input_DOB) > MONTH(GETDATE()) )  
+							OR
+							( MONTH(@Input_DOB) = MONTH(GETDATE()) AND DAY(@Input_DOB) > DAY(GETDATE())) 
+							THEN 1 ELSE 0
+					END
+
+-- ASSIGN 1 0R O TO TEMPDATE
+SELECT @tempDate =  DATEADD(YEAR, @YEAR, @tempDate)
+
+--TESTING PURPOSE
+SELECT @tempDate AS [AFTER YEAR SUBTRACT]
+
+--SUBTRACT MONTHS
+SELECT @months = DATEDIFF(MONTH, @tempDate,GETDATE()) -
+				CASE
+					WHEN DAY(@Input_DOB) > DAY(GETDATE())
+					THEN 1 ELSE 0
+				END
+
+SELECT @tempDate= DATEADD(MONTH, @months , @tempDate)
+
+--TESTING PURPOSE
+SELECT @tempDate AS [AFTER mONTHS SUBTRACT]
+
+SELECT @days = DATEDIFF(DAY, @tempDate, GETDATE())
+
+SELECT @tempDate AS [AFTER dAYS SUBTRACT]
+
+SELECT @year AS [YEARS], @months AS [MONTH],  @days AS [DAY] 
+
+
+GO
 
 
 
 
 
 
+
+----------------------------------------------------------------------------
+-- Create Function TO CALCULATE DATE OF BIRTH
+
+
+create FUNCTION fnComputeAge(@input_DOB datetime)
+RETURNS NVARCHAR(50)
+
+AS
+
+BEGIN
+
+DECLARE @tempDate datetime, @year int, @months int , @days int
+
+
+
+-- create a copy of Input_DOB value in Tempdate variable
+SELECT @tempdate = @Input_DOB
+
+
+SELECT @year = DATEDIFF(YEAR, @tempDate, GETDATE()) - 
+				CASE 
+					WHEN	( MONTH(@Input_DOB) > MONTH(GETDATE()) )  
+							OR
+							( MONTH(@Input_DOB) = MONTH(GETDATE()) AND DAY(@Input_DOB) > DAY(GETDATE())) 
+							THEN 1 ELSE 0
+					END
+
+-- ASSIGN 1 0R O TO TEMPDATE
+SELECT @tempDate =  DATEADD(YEAR, @YEAR, @tempDate)
+
+
+--SUBTRACT MONTHS
+SELECT @months = DATEDIFF(MONTH, @tempDate,GETDATE()) -
+				CASE
+					WHEN DAY(@Input_DOB) > DAY(GETDATE())
+					THEN 1 ELSE 0
+				END
+
+SELECT @tempDate= DATEADD(MONTH, @months , @tempDate)
+
+
+
+SELECT @days = DATEDIFF(DAY, @tempDate, GETDATE())
+
+	DECLARE @Age NVARCHAR(50)
+	SET @Age = Cast(@year as nvarchar(5)) + ' Years' + cast(@months as nvarchar(2)) +' Months'+ Cast(@Days as nvarchar) + ' Days Old.'
+
+	return @Age
+
+END
+
+
+
+-- call the function (mm-dd-yy)
+
+select dbo.fnComputeAge('10-20-1996')
