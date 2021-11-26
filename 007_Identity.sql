@@ -10,6 +10,11 @@
 	- Increment: increment by given value. 
 
 
+	- We need to add identity column while creating the table else we cannot be able to use 'SET IDENTITY_INSERT dbo.<Table_name> ON/OFF'.
+	- WE get Error
+		Table 'tblPerson2' does not have the identity property. Cannot perform SET operation.
+		
+
 	TO EXPLICITLY SUPPLY A VALUE FOR IDENTITY COLUMN
 	1. First turn ON 'IDENTITY_INSERT' 
 		- SET IDENTITY_INSERT <TABLE_NAME> ON
@@ -79,6 +84,7 @@ Delete from tblPerson2 where id = 1;
 	-- 2. specify the column list while inserting.
 
 SET IDENTITY_INSERT tblPerson2 ON
+go
 
 insert into dbo.tblPerson2 (Id,Name,Email,GenderId,Age) values (1,'John','j@j.com',null,null);
 

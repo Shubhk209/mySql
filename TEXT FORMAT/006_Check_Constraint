@@ -38,7 +38,7 @@
 						 
 
 	NOTE:
-	- if the table contains value(s) with does pass the boolean expression(return false) 
+	- if the table contains value(s) with does not pass the boolean expression(return false) 
 	  of check constraint, 
 		-the alter operation to add constraint in a table show error(conflict occurs).
 		
