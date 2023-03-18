@@ -1,0 +1,6 @@
+Comment: Clrt + K Ctrl + C
+Uncomment : Clrt + K Ctrl + U
+
+-----------------------------------------------
+Color Coding SQL Server Management Studio Status Bar
+- Connect to server > Options > Connection Properties > Use Custom color
