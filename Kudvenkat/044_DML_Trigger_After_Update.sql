@@ -25,11 +25,10 @@ Create TABLE tblEmployeeDetails (	Id int IDENTITY(1,1) primary key ,
 																		('Hemant',3500,'Male',1),
 																		('Rahul',3500,'Male',3)
 
-
-select * from test..tblEmployeeDetails 
-
+select * from tblEmployeeDetails 
 
 
+-- log table 
 Create table tbl_employeeAuditTable (	id int primary key identity(1,1),
 									AuditData nvarchar(max)
 								)

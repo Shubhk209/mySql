@@ -11,9 +11,13 @@ INSERT INTO TestTable (FirstName, LastName)
 SELECT FirstName, LastName
 FROM Person.Person
 WHERE EmailPromotion = 2
+
+
 ----Verify that Data in TestTable
 SELECT FirstName, LastName
 FROM TestTable
+
+
 ----Clean Up Database
 DROP TABLE TestTable
 GO
@@ -27,9 +31,13 @@ SELECT FirstName, LastName
 INTO TestTable
 FROM Person.Person
 WHERE EmailPromotion = 2
+
+
 ----Verify that Data in TestTable
 SELECT FirstName, LastName
 FROM TestTable
+
+
 ----Clean Up Database
 DROP TABLE TestTable
 GO
